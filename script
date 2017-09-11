@@ -1,0 +1,53 @@
+import re
+import sys
+
+if len(sys.argv) != 3:
+ print "script file_a file_b"
+ sys.exit(1)
+
+try:
+        f = open(sys.argv[1], 'r')
+        conn_a={}
+        while True:
+         line = f.readline()
+         if not line: break
+         if not ':' in line: break
+         conn_tuple=re.sub('\s{2,}', ' ',line).split (',')[0]
+         conn_idle_time=re.sub('\s{2,}', ' ',line).split (',')[1].split ( )[1]
+         conn_bytes=re.sub('\s{2,}', ' ',line).split (',')[2].split ( )[1]
+         conn_a[conn_tuple]={}
+         conn_a[conn_tuple]['idle'] = conn_idle_time
+         conn_a[conn_tuple]['bytes'] = conn_bytes
+except:
+ print "file_a %s does not exist" % sys.argv[1]
+ sys.exit(2)
+
+try:
+        f = open(sys.argv[2], 'r')
+        conn_b={}
+        while True:
+         line = f.readline()
+         if not line: break
+         if not ':' in line: break
+         conn_tuple=re.sub('\s{2,}', ' ',line).split (',')[0]
+         conn_idle_time=re.sub('\s{2,}', ' ',line).split (',')[1].split ( )[1]
+         conn_bytes=re.sub('\s{2,}', ' ',line).split (',')[2].split ( )[1]
+         conn_b[conn_tuple]={}
+         conn_b[conn_tuple]['idle'] = conn_idle_time
+         conn_b[conn_tuple]['bytes'] = conn_bytes
+except:
+ print "file_b %s does not exist" % sys.argv[2]
+ sys.exit(2)
+
+for key in conn_a:
+ if key in conn_b:
+  if conn_a[key]['bytes'] != conn_b[key]['bytes']:
+   print "\nfound difference in conn: %s\nBEFORE " % key
+   print conn_a[key]
+   print "AFTER "
+   print conn_b[key]
+ else:
+  print "\nconnection %s is gone\n"  % key
+for key in conn_b:
+ if not key in conn_a:
+   print "\nfound new conn: %s\n" % key
